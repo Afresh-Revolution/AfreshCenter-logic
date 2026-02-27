@@ -21,12 +21,30 @@ app.use(cors({ origin: true }));
 app.use(express.json());
 
 // Existing admin login (stub if you have real auth elsewhere)
+// Legacy path (no /api prefix)
 app.use('/admin/login', adminLogin);
+// Preferred API path with /api prefix
+app.use('/api/admin/login', adminLogin);
 
 // Services CRUD + visibility toggle (Postgres)
+// Legacy path
 app.use('/admin/services', adminServices(pool));
+// Preferred API path with /api prefix
+app.use('/api/admin/services', adminServices(pool));
 
+// Health check
+// Legacy path
 app.get('/health', async (_, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: 'DB not reachable' });
+  }
+});
+
+// Preferred API path with /api prefix
+app.get('/api/health', async (_, res) => {
   try {
     await pool.query('SELECT 1');
     res.json({ ok: true });
