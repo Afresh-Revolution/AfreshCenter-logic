@@ -1,18 +1,25 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { pool } from './config/db.js';
 import { mountAdminRoutes } from './routes/admin/index.js';
 import { adminServices, publicServices } from './routes/adminServices.js';
+import { uploadRouter } from './routes/upload.js';
 import contactRouter from './routes/contact.route.js';
 import teamRouter from './routes/team.route.js';
 import bookingRouter from './routes/booking.route.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // Standard Middleware
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Uploaded images (served at /uploads)
+app.use('/uploads', express.static(path.join(path.dirname(__dirname), 'uploads')));
 
 // Admin Routes (Modular)
 mountAdminRoutes(app, { prefix: '/admin' });
@@ -21,6 +28,10 @@ mountAdminRoutes(app, { prefix: '/api/admin' });
 // Admin Services Routes
 app.use('/admin/services', adminServices(pool));
 app.use('/api/admin/services', adminServices(pool));
+
+// Admin image upload (single "image" field for services)
+app.use('/admin/upload', uploadRouter());
+app.use('/api/admin/upload', uploadRouter());
 
 // Public services (visible only) for landing page
 app.use('/api/services', publicServices(pool));

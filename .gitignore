@@ -13,3 +13,4 @@ build/
 output.log
 output_utf8.log
 package_check.txt
+uploads/
