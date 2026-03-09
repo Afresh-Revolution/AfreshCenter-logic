@@ -10,9 +10,11 @@ import { Router } from 'express';
  *   title (text),
  *   category (text),
  *   price_range (text),
+ *   image_url (text),
+ *   description (text),
  *   total_bookings (integer),
  *   visible (boolean),
- *   created_at (timestamp) — used for ordering.
+ *   created_at (timestamp) — used for orderings.
  */
 function adminServices(pool) {
   const router = Router();
@@ -21,13 +23,15 @@ function adminServices(pool) {
   router.get('/', async (req, res) => {
     try {
       const result = await pool.query(
-        'SELECT id, title, category, price_range, total_bookings, visible FROM services ORDER BY created_at DESC'
+        'SELECT id, title, category, price_range, image_url, description, total_bookings, visible FROM services ORDER BY created_at DESC'
       );
       const services = result.rows.map((s) => ({
         id: String(s.id),
         title: s.title,
         category: s.category,
         priceRange: s.price_range,
+        imageUrl: s.image_url,
+        description: s.description,
         totalBookings: Number(s.total_bookings ?? 0),
         status: s.visible ? 'Active' : 'Inactive',
         visible: !!s.visible,
@@ -42,7 +46,7 @@ function adminServices(pool) {
   // POST /admin/services — create a new service
   router.post('/', async (req, res) => {
     try {
-      const { title, category, priceRange, visible } = req.body || {};
+      const { title, category, priceRange, imageUrl, description, visible } = req.body || {};
       if (!title || typeof title !== 'string' || !title.trim()) {
         return res.status(400).json({
           success: false,
@@ -52,11 +56,13 @@ function adminServices(pool) {
       }
 
       const text =
-        'INSERT INTO services (title, category, price_range, total_bookings, visible) VALUES ($1, $2, $3, $4, $5) RETURNING id, title, category, price_range, total_bookings, visible';
+        'INSERT INTO services (title, category, price_range, image_url, description, total_bookings, visible) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, title, category, price_range, image_url, description, total_bookings, visible';
       const values = [
         String(title).trim(),
         String(category ?? 'General').trim(),
         String(priceRange ?? '').trim(),
+        imageUrl ? String(imageUrl).trim() : null,
+        description ? String(description).trim() : null,
         0,
         visible !== false,
       ];
@@ -71,6 +77,8 @@ function adminServices(pool) {
           title: s.title,
           category: s.category,
           priceRange: s.price_range,
+          imageUrl: s.image_url,
+          description: s.description,
           totalBookings: Number(s.total_bookings ?? 0),
           status: s.visible ? 'Active' : 'Inactive',
           visible: !!s.visible,
@@ -93,7 +101,7 @@ function adminServices(pool) {
       const { visible } = req.body ?? {};
 
       const find = await pool.query(
-        'SELECT id, title, category, price_range, total_bookings, visible FROM services WHERE id = $1',
+        'SELECT id, title, category, price_range, image_url, description, total_bookings, visible FROM services WHERE id = $1',
         [id]
       );
       if (find.rowCount === 0) {
@@ -106,7 +114,7 @@ function adminServices(pool) {
       const nextVisible = typeof visible === 'boolean' ? visible : !current.visible;
 
       const update = await pool.query(
-        'UPDATE services SET visible = $1 WHERE id = $2 RETURNING id, title, category, price_range, total_bookings, visible',
+        'UPDATE services SET visible = $1 WHERE id = $2 RETURNING id, title, category, price_range, image_url, description, total_bookings, visible',
         [nextVisible, id]
       );
       const s = update.rows[0];
@@ -121,6 +129,8 @@ function adminServices(pool) {
           title: s.title,
           category: s.category,
           priceRange: s.price_range,
+          imageUrl: s.image_url,
+          description: s.description,
           totalBookings: Number(s.total_bookings ?? 0),
           status: s.visible ? 'Active' : 'Inactive',
           visible: !!s.visible,
@@ -140,10 +150,10 @@ function adminServices(pool) {
   router.patch('/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, category, priceRange, visible } = req.body ?? {};
+      const { title, category, priceRange, imageUrl, description, visible } = req.body ?? {};
 
       const find = await pool.query(
-        'SELECT id, title, category, price_range, total_bookings, visible FROM services WHERE id = $1',
+        'SELECT id, title, category, price_range, image_url, description, total_bookings, visible FROM services WHERE id = $1',
         [id]
       );
       if (find.rowCount === 0) {
@@ -156,12 +166,14 @@ function adminServices(pool) {
       const titleVal = typeof title === 'string' && title.trim() ? title.trim() : find.rows[0].title;
       const categoryVal = typeof category === 'string' ? (category.trim() || 'General') : find.rows[0].category;
       const priceRangeVal = typeof priceRange === 'string' ? priceRange.trim() : find.rows[0].price_range;
+      const imageUrlVal = typeof imageUrl === 'string' ? imageUrl.trim() : find.rows[0].image_url;
+      const descriptionVal = typeof description === 'string' ? description.trim() : find.rows[0].description;
       const visibleVal = typeof visible === 'boolean' ? visible : find.rows[0].visible;
 
       const result = await pool.query(
-        `UPDATE services SET title = $1, category = $2, price_range = $3, visible = $4
-         WHERE id = $5 RETURNING id, title, category, price_range, total_bookings, visible`,
-        [titleVal, categoryVal, priceRangeVal, visibleVal, id]
+        `UPDATE services SET title = $1, category = $2, price_range = $3, image_url = $4, description = $5, visible = $6
+         WHERE id = $7 RETURNING id, title, category, price_range, image_url, description, total_bookings, visible`,
+        [titleVal, categoryVal, priceRangeVal, imageUrlVal, descriptionVal, visibleVal, id]
       );
       const s = result.rows[0];
 
@@ -173,6 +185,8 @@ function adminServices(pool) {
           title: s.title,
           category: s.category,
           priceRange: s.price_range,
+          imageUrl: s.image_url,
+          description: s.description,
           totalBookings: Number(s.total_bookings ?? 0),
           status: s.visible ? 'Active' : 'Inactive',
           visible: !!s.visible,
