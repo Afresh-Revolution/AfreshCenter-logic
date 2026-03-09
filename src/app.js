@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { pool } from './config/db.js';
 import { mountAdminRoutes } from './routes/admin/index.js';
-import { adminServices } from './routes/adminServices.js';
+import { adminServices, publicServices } from './routes/adminServices.js';
 import contactRouter from './routes/contact.route.js';
 import teamRouter from './routes/team.route.js';
 import bookingRouter from './routes/booking.route.js';
@@ -21,6 +21,9 @@ mountAdminRoutes(app, { prefix: '/api/admin' });
 // Admin Services Routes
 app.use('/admin/services', adminServices(pool));
 app.use('/api/admin/services', adminServices(pool));
+
+// Public services (visible only) for landing page
+app.use('/api/services', publicServices(pool));
 
 // Contact Routes
 app.use('/api/contact', contactRouter);
