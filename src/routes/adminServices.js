@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
 const SERVICE_COLS =
-  'id, title, category, price_range, image_url, description, total_bookings, visible, created_at' +
-  ', background_image_url, short_description, overview, overview_image_url, key_features, benefits, what_you_get';
+  'id, title, category, price_range, image, description, total_bookings, visible, created_at' +
+  ', short_description, overview, key_features, benefits, what_you_get';
 
 function textToArray(val) {
   if (val == null || val === '') return [];
@@ -21,15 +21,13 @@ function mapRow(s) {
     title: s.title,
     category: s.category,
     priceRange: s.price_range,
-    imageUrl: s.image_url ?? null,
+    image: s.image ?? null,
     description: s.description ?? null,
     totalBookings: Number(s.total_bookings ?? 0),
     status: s.visible ? 'Active' : 'Inactive',
     visible: !!s.visible,
-    backgroundImageUrl: s.background_image_url ?? null,
     shortDescription: s.short_description ?? null,
     overview: s.overview ?? null,
-    overviewImageUrl: s.overview_image_url ?? null,
     keyFeatures: textToArray(s.key_features),
     benefits: textToArray(s.benefits),
     whatYouGet: textToArray(s.what_you_get),
@@ -38,8 +36,9 @@ function mapRow(s) {
 
 /**
  * adminServices routes using Postgres.
- * Table: services — base columns plus background_image_url, short_description, overview,
- * overview_image_url, key_features, benefits, what_you_get (run migrations/001_add_service_detail_fields.sql).
+ * Table: services — id, title, category, price_range, image, description, total_bookings, visible, created_at,
+ * short_description, overview, key_features, benefits, what_you_get.
+ * Run migrations/001 and 002_single_image_column.sql. Image is uploaded via POST /api/admin/upload.
  */
 function adminServices(pool) {
   const router = Router();
@@ -64,13 +63,11 @@ function adminServices(pool) {
         title,
         category,
         priceRange,
-        imageUrl,
+        image,
         description,
         visible,
-        backgroundImageUrl,
         shortDescription,
         overview,
-        overviewImageUrl,
         keyFeatures,
         benefits,
         whatYouGet,
@@ -84,22 +81,20 @@ function adminServices(pool) {
       }
 
       const insertCols =
-        'title, category, price_range, image_url, description, total_bookings, visible' +
-        ', background_image_url, short_description, overview, overview_image_url, key_features, benefits, what_you_get';
-      const placeholders = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((i) => `$${i}`).join(', ');
+        'title, category, price_range, image, description, total_bookings, visible' +
+        ', short_description, overview, key_features, benefits, what_you_get';
+      const placeholders = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `$${i}`).join(', ');
       const text = `INSERT INTO services (${insertCols}) VALUES (${placeholders}) RETURNING ${SERVICE_COLS}`;
       const values = [
         String(title).trim(),
         String(category ?? 'General').trim(),
         String(priceRange ?? '').trim(),
-        imageUrl ? String(imageUrl).trim() : null,
+        image ? String(image).trim() : null,
         description ? String(description).trim() : null,
         0,
         visible !== false,
-        backgroundImageUrl ? String(backgroundImageUrl).trim() : null,
         shortDescription ? String(shortDescription).trim() : null,
         overview ? String(overview).trim() : null,
-        overviewImageUrl ? String(overviewImageUrl).trim() : null,
         arrayToText(keyFeatures),
         arrayToText(benefits),
         arrayToText(whatYouGet),
@@ -165,13 +160,11 @@ function adminServices(pool) {
         title,
         category,
         priceRange,
-        imageUrl,
+        image,
         description,
         visible,
-        backgroundImageUrl,
         shortDescription,
         overview,
-        overviewImageUrl,
         keyFeatures,
         benefits,
         whatYouGet,
@@ -189,34 +182,30 @@ function adminServices(pool) {
       const titleVal = typeof title === 'string' && title.trim() ? title.trim() : row.title;
       const categoryVal = typeof category === 'string' ? (category.trim() || 'General') : row.category;
       const priceRangeVal = typeof priceRange === 'string' ? priceRange.trim() : row.price_range;
-      const imageUrlVal = imageUrl !== undefined ? (imageUrl ? String(imageUrl).trim() : null) : row.image_url;
+      const imageVal = image !== undefined ? (image ? String(image).trim() : null) : row.image;
       const descriptionVal = description !== undefined ? (description ? String(description).trim() : null) : row.description;
       const visibleVal = typeof visible === 'boolean' ? visible : row.visible;
-      const backgroundImageUrlVal = backgroundImageUrl !== undefined ? (backgroundImageUrl ? String(backgroundImageUrl).trim() : null) : row.background_image_url;
       const shortDescriptionVal = shortDescription !== undefined ? (shortDescription ? String(shortDescription).trim() : null) : row.short_description;
       const overviewVal = overview !== undefined ? (overview ? String(overview).trim() : null) : row.overview;
-      const overviewImageUrlVal = overviewImageUrl !== undefined ? (overviewImageUrl ? String(overviewImageUrl).trim() : null) : row.overview_image_url;
       const keyFeaturesVal = keyFeatures !== undefined ? arrayToText(keyFeatures) : row.key_features;
       const benefitsVal = benefits !== undefined ? arrayToText(benefits) : row.benefits;
       const whatYouGetVal = whatYouGet !== undefined ? arrayToText(whatYouGet) : row.what_you_get;
 
       const result = await pool.query(
         `UPDATE services SET
-          title = $1, category = $2, price_range = $3, image_url = $4, description = $5, visible = $6,
-          background_image_url = $7, short_description = $8, overview = $9, overview_image_url = $10,
-          key_features = $11, benefits = $12, what_you_get = $13
-         WHERE id = $14 RETURNING ${SERVICE_COLS}`,
+          title = $1, category = $2, price_range = $3, image = $4, description = $5, visible = $6,
+          short_description = $7, overview = $8,
+          key_features = $9, benefits = $10, what_you_get = $11
+         WHERE id = $12 RETURNING ${SERVICE_COLS}`,
         [
           titleVal,
           categoryVal,
           priceRangeVal,
-          imageUrlVal,
+          imageVal,
           descriptionVal,
           visibleVal,
-          backgroundImageUrlVal,
           shortDescriptionVal,
           overviewVal,
-          overviewImageUrlVal,
           keyFeaturesVal,
           benefitsVal,
           whatYouGetVal,
