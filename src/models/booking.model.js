@@ -38,3 +38,8 @@ export const getAllBookings = async () => {
     const { rows } = await pool.query('SELECT * FROM bookings ORDER BY created_at DESC');
     return rows;
 };
+
+export const getBookingById = async (id) => {
+    const { rows } = await pool.query('SELECT * FROM bookings WHERE id = $1', [id]);
+    return rows[0];
+};

@@ -16,4 +16,7 @@ router.get('/template', bookingController.getBookingTemplate);
 // PATCH /api/bookings/template - Update booking template
 router.patch('/template', bookingMiddleware.validateBookingTemplateUpdate, bookingController.updateBookingTemplate);
 
+// POST /api/bookings/:id/trigger-email - Manually trigger email for a booking
+router.post('/:id/trigger-email', bookingController.triggerManualBookingEmail);
+
 export default router;

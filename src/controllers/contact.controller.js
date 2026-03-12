@@ -48,3 +48,41 @@ export const updateTemplate = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error updating template' });
     }
 };
+
+export const triggerManualContactEmail = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const message = await contactModel.getMessageById(id);
+
+        if (!message) {
+            return res.status(404).json({ success: false, message: 'Message not found' });
+        }
+
+        // Send Email
+        try {
+            const template = await contactModel.getTemplateById('contact_notification');
+            if (template) {
+                const subject = emailService.parseTemplate(template.subject, message);
+                const body = emailService.parseTemplate(template.body, message);
+                await emailService.sendEmail(subject, body, process.env.NOTIFICATION_EMAIL);
+            }
+        } catch (emailErr) {
+            console.error('Manual contact email notification failed:', emailErr);
+            return res.status(500).json({ success: false, message: 'Failed to send email' });
+        }
+
+        res.json({ success: true, message: 'Contact email triggered manually' });
+    } catch (err) {
+        console.error('Trigger manual contact error:', err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+export const getMessages = async (req, res) => {
+    try {
+        const messages = await contactModel.getAllMessages();
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Error fetching messages' });
+    }
+};

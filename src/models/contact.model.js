@@ -42,6 +42,16 @@ export const createMessage = async (data) => {
     return rows[0];
 };
 
+export const getMessageById = async (id) => {
+    const { rows } = await pool.query('SELECT * FROM contact_messages WHERE id = $1', [id]);
+    return rows[0];
+};
+
+export const getAllMessages = async () => {
+    const { rows } = await pool.query('SELECT * FROM contact_messages ORDER BY created_at DESC');
+    return rows;
+};
+
 export const getTemplateById = async (id) => {
     const { rows } = await pool.query('SELECT * FROM email_templates WHERE id = $1', [id]);
     return rows[0];

@@ -29,7 +29,7 @@ You can view these tables using a database management tool (like the Supabase Da
 
 ### C. API Endpoints
 - **For Bookings**: You can fetch all bookings by sending a `GET` request to `/api/bookings`.
-- **For Contact Messages**: Currently, these are saved to the database but do not have a public "List All" API endpoint for security (to prevent anyone from reading your messages).
+- **For Contact Messages**: You can fetch all contact messages by sending a `GET` request to `/api/contact`.
 
 ## 3. Key Components
 
@@ -91,7 +91,19 @@ The message content (Subject and Body) is stored in the database. You can change
 2.  **Case Sensitivity**: The names inside the braces must match the field names exactly (e.g., `{{full_name}}` NOT `{{FullName}}`).
 3.  **No Code Changes Needed**: Once you update the template via the API, all future emails will use the new format immediately.
 
-## 6. Troubleshooting
+## 6. Manual Email Triggers (Dashboard Integration)
+
+If you need to resend a notification or trigger it manually from the dashboard, you can use these endpoints:
+
+### Trigger Booking Email
+- **Endpoint**: `POST /api/bookings/:id/trigger-email`
+- **Action**: Fetches the booking by ID and sends the notification to the admin.
+
+### Trigger Contact message Email
+- **Endpoint**: `POST /api/contact/:id/trigger-email`
+- **Action**: Fetches the contact message by ID and sends the notification to the admin.
+
+## 7. Troubleshooting
 
 - **Email not received**: Check if the `RESEND_API_KEY` is valid.
 - **Onboarding limitations**: If using `onboarding@resend.dev`, you can only send to the email you registered with Resend.
