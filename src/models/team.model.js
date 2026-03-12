@@ -9,6 +9,7 @@ export const initTeamDb = async () => {
                 role TEXT NOT NULL,
                 bio TEXT,
                 image_url TEXT,
+                visible BOOLEAN DEFAULT true,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
@@ -37,17 +38,17 @@ export const createMember = async (data) => {
 };
 
 export const updateMemberById = async (id, data) => {
-    const { name, role, bio, image_url } = data;
+    const { name, role, bio, image_url, visible } = data;
     const query = `
-        UPDATE team_members 
-        SET name = COALESCE($1, name), 
-            role = COALESCE($2, role), 
-            bio = COALESCE($3, bio), 
-            image_url = COALESCE($4, image_url) 
-        WHERE id = $5 
+        UPDATE team_members
+        SET name = COALESCE($1, name),
+            role = COALESCE($2, role),
+            bio = COALESCE($3, bio),
+            image_url = COALESCE($4, image_url),
+            visible = COALESCE($5, visible)
+        WHERE id = $6
         RETURNING *`;
-    const values = [name, role, bio, image_url, id];
-    const { rows } = await pool.query(query, values);
+    const values = [name, role, bio, image_url, visible, id];
     return rows[0];
 };
 

@@ -5,7 +5,8 @@ export const validateTeamMember = (req, res, next) => {
         name: Joi.string().required().trim(),
         role: Joi.string().required().trim(),
         bio: Joi.string().allow('', null).trim(),
-        image_url: Joi.string().uri().allow('', null).trim()
+        image_url: Joi.string().allow('', null).trim(),
+        visible: Joi.boolean().optional()
     });
 
     const { error, value } = schema.validate(req.body);
