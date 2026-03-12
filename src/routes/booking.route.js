@@ -7,6 +7,9 @@ const router = Router();
 // GET /api/bookings - List all bookings (for admin)
 router.get('/', bookingController.getBookings);
 
+// GET /api/bookings/:id - Get a specific booking
+router.get('/:id', bookingController.getBooking);
+
 // POST /api/bookings - Submit a new booking session
 router.post('/', bookingMiddleware.validateBooking, bookingController.submitBooking);
 

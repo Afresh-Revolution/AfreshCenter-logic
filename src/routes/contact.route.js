@@ -7,6 +7,9 @@ const router = Router();
 // GET /api/contact - List all messages (for admin)
 router.get('/', contactController.getMessages);
 
+// GET /api/contact/:id - Get a specific message
+router.get('/:id', contactController.getMessage);
+
 // POST /api/contact - Submit form
 router.post('/', contactMiddleware.validateContactSubmission, contactController.submitContactForm);
 

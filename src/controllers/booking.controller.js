@@ -59,6 +59,17 @@ export const getBookings = async (req, res) => {
     }
 };
 
+export const getBooking = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const booking = await bookingModel.getBookingById(id);
+        if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
+        res.json(booking);
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Error fetching booking' });
+    }
+};
+
 export const triggerManualBookingEmail = async (req, res) => {
     try {
         const { id } = req.params;

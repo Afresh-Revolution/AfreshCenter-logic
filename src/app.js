@@ -38,12 +38,16 @@ app.use('/api/services', publicServices(pool));
 
 // Contact Routes
 app.use('/api/contact', contactRouter);
+app.use('/api/admin/contact', contactRouter);
+app.use('/admin/contact', contactRouter);
 
 // Team Routes
 app.use('/api/teams', teamRouter);
 
 // Booking Routes
 app.use('/api/bookings', bookingRouter);
+app.use('/api/admin/bookings', bookingRouter);
+app.use('/admin/bookings', bookingRouter);
 
 // Health Check Routes
 const healthHandler = async (req, res) => {

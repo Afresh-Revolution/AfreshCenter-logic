@@ -39,13 +39,16 @@ Prefix: `/admin/services` or `/api/admin/services`
 ---
 
 ## 4. Contact Us
-Prefix: `/api/contact`
+Prefix: `/api/contact` or `/api/admin/contact`
 
 | Method | Endpoint | Description | Payload |
 |--------|----------|-------------|---------|
+| GET | `/` | List all contact messages (Admin). | N/A |
+| GET | `/:id` | Get a specific contact message. | N/A |
 | POST | `/` | Submit a contact message. | `{ "name": "...", "email": "...", "phone": "...", "subject": "...", "message": "..." }` |
 | GET | `/template` | Get the contact email template. | N/A |
 | PATCH | `/template` | Update the contact email template. | `{ "subject": "...", "body": "..." }` |
+| POST | `/:id/trigger-email` | Manually trigger email for a message. | N/A |
 
 ---
 
@@ -63,14 +66,16 @@ Prefix: `/api/teams`
 ---
 
 ## 6. Booking Sessions
-Prefix: `/api/bookings`
+Prefix: `/api/bookings` or `/api/admin/bookings`
 
 | Method | Endpoint | Description | Payload |
 |--------|----------|-------------|---------|
 | GET | `/` | List all bookings (Admin). | N/A |
+| GET | `/:id` | Get a specific booking. | N/A |
 | POST | `/` | Submit a new session booking. | `{ "full_name": "...", "email": "...", "phone_number": "...", "company": "...", "project_details": "..." }` |
 | GET | `/template` | Get the booking notification template. | N/A |
 | PATCH | `/template` | Update the booking notification template. | `{ "subject": "...", "body": "..." }` |
+| POST | `/:id/trigger-email` | Manually trigger email for a booking. | N/A |
 
 ---
 

@@ -86,3 +86,14 @@ export const getMessages = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error fetching messages' });
     }
 };
+
+export const getMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const message = await contactModel.getMessageById(id);
+        if (!message) return res.status(404).json({ success: false, message: 'Message not found' });
+        res.json(message);
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Error fetching message' });
+    }
+};
