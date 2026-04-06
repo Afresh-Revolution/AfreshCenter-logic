@@ -30,9 +30,12 @@ export const getMemberById = async (id) => {
 };
 
 export const createMember = async (data) => {
-    const { name, role, bio, image_url } = data;
-    const query = 'INSERT INTO team_members (name, role, bio, image_url) VALUES ($1, $2, $3, $4) RETURNING *';
-    const values = [name, role, bio, image_url];
+    const { name, role, bio, image_url, visible } = data;
+    const query = `
+        INSERT INTO team_members (name, role, bio, image_url, visible)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *`;
+    const values = [name, role, bio || null, image_url || null, visible !== false];
     const { rows } = await pool.query(query, values);
     return rows[0];
 };
@@ -49,6 +52,7 @@ export const updateMemberById = async (id, data) => {
         WHERE id = $6
         RETURNING *`;
     const values = [name, role, bio, image_url, visible, id];
+    const { rows } = await pool.query(query, values);
     return rows[0];
 };
 

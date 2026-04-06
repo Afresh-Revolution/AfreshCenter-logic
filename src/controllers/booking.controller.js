@@ -70,6 +70,23 @@ export const getBooking = async (req, res) => {
     }
 };
 
+// PATCH /api/bookings/:id/status — update booking status
+export const updateStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body ?? {};
+        if (!status) {
+            return res.status(400).json({ success: false, message: 'status is required' });
+        }
+        const booking = await bookingModel.updateBookingStatus(id, status);
+        if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
+        res.json({ success: true, message: `Status updated to ${status}`, booking });
+    } catch (err) {
+        console.error('Update booking status error:', err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 export const triggerManualBookingEmail = async (req, res) => {
     try {
         const { id } = req.params;

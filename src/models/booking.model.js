@@ -10,8 +10,14 @@ export const initBookingDb = async () => {
                 phone_number TEXT NOT NULL,
                 company TEXT,
                 project_details TEXT NOT NULL,
+                status TEXT DEFAULT 'Pending',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
+        `);
+
+        // Add status column if it doesn't exist (for existing deployments)
+        await pool.query(`
+            ALTER TABLE bookings ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Pending'
         `);
 
         // Add default booking template if not exists
@@ -41,5 +47,15 @@ export const getAllBookings = async () => {
 
 export const getBookingById = async (id) => {
     const { rows } = await pool.query('SELECT * FROM bookings WHERE id = $1', [id]);
+    return rows[0];
+};
+
+export const updateBookingStatus = async (id, status) => {
+    const allowed = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
+    const safeStatus = allowed.includes(status) ? status : 'Pending';
+    const { rows } = await pool.query(
+        'UPDATE bookings SET status = $1 WHERE id = $2 RETURNING *',
+        [safeStatus, id]
+    );
     return rows[0];
 };

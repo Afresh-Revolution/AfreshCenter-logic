@@ -6,7 +6,7 @@ export const validateTeamMember = (req, res, next) => {
         role: Joi.string().required().trim(),
         bio: Joi.string().allow('', null).trim(),
         image_url: Joi.string().allow('', null).trim(),
-        visible: Joi.boolean().optional()
+        visible: Joi.boolean().optional(),
     });
 
     const { error, value } = schema.validate(req.body);
@@ -28,7 +28,9 @@ export const validateTeamMemberUpdate = (req, res, next) => {
         name: Joi.string().trim(),
         role: Joi.string().trim(),
         bio: Joi.string().allow('', null).trim(),
-        image_url: Joi.string().uri().allow('', null).trim()
+        // Removed .uri() — upload endpoints return relative paths like /uploads/xxx.jpg
+        image_url: Joi.string().allow('', null).trim(),
+        visible: Joi.boolean().optional(),
     }).min(1);
 
     const { error, value } = schema.validate(req.body);

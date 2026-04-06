@@ -13,8 +13,22 @@ import bookingRouter from './routes/booking.route.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-// Standard Middleware
-app.use(cors({ origin: true, credentials: true }));
+// CORS – explicit allowlist of permitted origins
+const ALLOWED_ORIGINS = [
+  'https://afresh.center',
+  'https://www.afresh.center',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, server-to-server, mobile apps)
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
