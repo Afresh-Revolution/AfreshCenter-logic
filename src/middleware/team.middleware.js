@@ -25,11 +25,11 @@ export const validateTeamMember = (req, res, next) => {
 
 export const validateTeamMemberUpdate = (req, res, next) => {
     const schema = Joi.object({
-        name: Joi.string().trim(),
-        role: Joi.string().trim(),
-        bio: Joi.string().allow('', null).trim(),
+        name: Joi.string().trim().optional(),
+        role: Joi.string().trim().optional(),
+        bio: Joi.string().allow('', null).trim().optional(),
         // Removed .uri() — upload endpoints return relative paths like /uploads/xxx.jpg
-        image_url: Joi.string().allow('', null).trim(),
+        image_url: Joi.string().allow('', null).trim().optional(),
         visible: Joi.boolean().optional(),
     }).min(1);
 

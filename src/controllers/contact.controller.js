@@ -81,7 +81,8 @@ export const triggerManualContactEmail = async (req, res) => {
 export const getMessages = async (req, res) => {
     try {
         const messages = await contactModel.getAllMessages();
-        res.json(messages);
+        const formatted = messages.map(m => ({ ...m, type: 'contact' }));
+        res.json({ success: true, messages: formatted });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Error fetching messages' });
     }
@@ -92,7 +93,7 @@ export const getMessage = async (req, res) => {
         const { id } = req.params;
         const message = await contactModel.getMessageById(id);
         if (!message) return res.status(404).json({ success: false, message: 'Message not found' });
-        res.json(message);
+        res.json({ success: true, message: { ...message, type: 'contact' } });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Error fetching message' });
     }

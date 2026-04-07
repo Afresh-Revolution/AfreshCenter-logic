@@ -43,8 +43,8 @@ Prefix: `/api/contact` or `/api/admin/contact`
 
 | Method | Endpoint | Description | Payload |
 |--------|----------|-------------|---------|
-| GET | `/` | List all contact messages (Admin). | N/A |
-| GET | `/:id` | Get a specific contact message. | N/A |
+| GET | `/` | List all contact messages (Admin). Returns `{ success: true, messages: [...] }`. | N/A |
+| GET | `/:id` | Get a specific contact message. Returns `{ success: true, message: { ... } }`. | N/A |
 | POST | `/` | Submit a contact message. | `{ "name": "...", "email": "...", "phone": "...", "subject": "...", "message": "..." }` |
 | GET | `/template` | Get the contact email template. | N/A |
 | PATCH | `/template` | Update the contact email template. | `{ "subject": "...", "body": "..." }` |
@@ -70,8 +70,8 @@ Prefix: `/api/bookings` or `/api/admin/bookings`
 
 | Method | Endpoint | Description | Payload |
 |--------|----------|-------------|---------|
-| GET | `/` | List all bookings (Admin). | N/A |
-| GET | `/:id` | Get a specific booking. | N/A |
+| GET | `/` | List all bookings (Admin). Returns `{ success: true, bookings: [...] }`. | N/A |
+| GET | `/:id` | Get a specific booking. Returns `{ success: true, booking: { ... } }`. | N/A |
 | POST | `/` | Submit a new session booking. | `{ "full_name": "...", "email": "...", "phone_number": "...", "company": "...", "project_details": "..." }` |
 | GET | `/template` | Get the booking notification template. | N/A |
 | PATCH | `/template` | Update the booking notification template. | `{ "subject": "...", "body": "..." }` |

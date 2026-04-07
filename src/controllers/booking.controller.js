@@ -53,7 +53,8 @@ export const updateBookingTemplate = async (req, res) => {
 export const getBookings = async (req, res) => {
     try {
         const bookings = await bookingModel.getAllBookings();
-        res.json(bookings);
+        const formatted = bookings.map(b => ({ ...b, type: 'booking' }));
+        res.json({ success: true, bookings: formatted });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Error fetching bookings' });
     }
@@ -64,7 +65,7 @@ export const getBooking = async (req, res) => {
         const { id } = req.params;
         const booking = await bookingModel.getBookingById(id);
         if (!booking) return res.status(404).json({ success: false, message: 'Booking not found' });
-        res.json(booking);
+        res.json({ success: true, booking: { ...booking, type: 'booking' } });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Error fetching booking' });
     }

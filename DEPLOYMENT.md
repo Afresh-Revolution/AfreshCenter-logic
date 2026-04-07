@@ -63,3 +63,4 @@ To ensure emails are sent successfully from Render, follow these steps in your [
 Once the service is "Live":
 1. Visit `https://your-app-name.onrender.com/health` to check if it's up.
 2. Use the provided [API_ENDPOINTS.md](./API_ENDPOINTS.md) to test your production endpoints.
+

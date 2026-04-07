@@ -51,7 +51,14 @@ export const updateMemberById = async (id, data) => {
             visible = COALESCE($5, visible)
         WHERE id = $6
         RETURNING *`;
-    const values = [name, role, bio, image_url, visible, id];
+    const values = [
+        name !== undefined ? name : null,
+        role !== undefined ? role : null,
+        bio !== undefined ? bio : null,
+        image_url !== undefined ? image_url : null,
+        visible !== undefined ? visible : null,
+        id
+    ];
     const { rows } = await pool.query(query, values);
     return rows[0];
 };

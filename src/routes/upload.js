@@ -103,4 +103,4 @@ function uploadRouter() {
   return router;
 }
 
-export { uploadRouter, UPLOAD_DIR };
+export { uploadRouter };
