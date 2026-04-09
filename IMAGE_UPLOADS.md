@@ -56,7 +56,7 @@ const response = await fetch('/api/admin/upload', {
 });
 
 const data = await response.json();
-// data.url  → "https://res.cloudinary.com/your_cloud/image/upload/v.../afreshcenter/abc123.jpg"
+// data.secure_url  → "https://res.cloudinary.com/your_cloud/image/upload/v.../afreshcenter/abc123.jpg"
 // data.public_id → "afreshcenter/abc123"
 ```
 
@@ -75,7 +75,7 @@ const { data } = await axios.post('/api/admin/upload', formData, {
   },
 });
 
-console.log(data.url); // save this URL to your DB
+console.log(data.secure_url); // save this URL to your DB
 ```
 
 ---
@@ -95,14 +95,14 @@ curl -X POST https://your-api.onrender.com/api/admin/upload \
 ```json
 {
   "success": true,
-  "url": "https://res.cloudinary.com/your_cloud/image/upload/v1234567890/afreshcenter/abc123.jpg",
+  "secure_url": "https://res.cloudinary.com/your_cloud/image/upload/v1234567890/afreshcenter/abc123.jpg",
   "public_id": "afreshcenter/abc123"
 }
 ```
 
 | Field | Description |
 |---|---|
-| `url` | HTTPS CDN link — **save this in your Supabase DB** |
+| `secure_url` | HTTPS CDN link — **save this in your Supabase DB** |
 | `public_id` | Cloudinary identifier — useful for deleting or transforming later |
 
 ---
@@ -128,7 +128,7 @@ const { data: uploadData } = await axios.post('/api/admin/upload', formData, { .
 await axios.post('/api/teams', {
   name: 'John Doe',
   role: 'Therapist',
-  image_url: uploadData.url,   // ← Cloudinary URL stored in Supabase
+  image_url: uploadData.secure_url,   // ← Cloudinary URL stored in Supabase
   bio: '...',
 });
 ```
@@ -148,7 +148,7 @@ Express Server  ──── streams buffer ────▶  Cloudinary
                                                │
                                     returns secure_url
                                                │
-  ◀──────────────── { success, url } ──────────┘
+  ◀──────────────── { success, secure_url, public_id } ──────────┘
   │
   │  saves url to Supabase DB
   ▼
@@ -160,7 +160,7 @@ Supabase Postgres
 
 ## 🖼️ Displaying Images
 
-Use the `url` from the DB directly in your frontend:
+Use the URL from the DB directly in your frontend:
 
 ```jsx
 <img src={member.image_url} alt={member.name} />

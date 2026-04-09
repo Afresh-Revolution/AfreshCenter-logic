@@ -7,6 +7,7 @@ import { uploadRouter } from './routes/upload.js';
 import contactRouter from './routes/contact.route.js';
 import teamRouter from './routes/team.route.js';
 import bookingRouter from './routes/booking.route.js';
+import { authMiddleware } from './middleware/auth.middleware.js';
 
 const app = express();
 
@@ -40,8 +41,8 @@ app.use('/admin/services', adminServices(pool));
 app.use('/api/admin/services', adminServices(pool));
 
 // Admin image upload (single "image" field for services)
-app.use('/admin/upload', uploadRouter());
-app.use('/api/admin/upload', uploadRouter());
+app.use('/admin/upload', authMiddleware, uploadRouter());
+app.use('/api/admin/upload', authMiddleware, uploadRouter());
 
 // Public services (visible only) for landing page
 app.use('/api/services', publicServices(pool));

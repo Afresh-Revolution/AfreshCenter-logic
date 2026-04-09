@@ -92,7 +92,7 @@ function uploadRouter() {
         const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype);
         return res.json({
           success: true,
-          url: result.secure_url,      // HTTPS URL — safe to store in Supabase DB
+          secure_url: result.secure_url,      // HTTPS URL — safe to store in Supabase DB
           public_id: result.public_id, // useful if you later want to delete/transform
         });
       } catch (e) {
