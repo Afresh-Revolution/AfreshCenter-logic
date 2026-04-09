@@ -1,7 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { pool } from './config/db.js';
 import { mountAdminRoutes } from './routes/admin/index.js';
 import { adminServices, publicServices } from './routes/adminServices.js';
@@ -10,7 +8,6 @@ import contactRouter from './routes/contact.route.js';
 import teamRouter from './routes/team.route.js';
 import bookingRouter from './routes/booking.route.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // CORS – explicit allowlist of permitted origins
@@ -32,8 +29,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Uploaded images (served at /uploads)
-app.use('/uploads', express.static(path.join(path.dirname(__dirname), 'uploads')));
+// Images are now served via Cloudinary CDN — no local /uploads directory needed.
 
 // Admin Routes (Modular)
 mountAdminRoutes(app, { prefix: '/admin' });
