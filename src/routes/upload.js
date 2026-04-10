@@ -96,8 +96,21 @@ function uploadRouter() {
           public_id: result.public_id, // useful if you later want to delete/transform
         });
       } catch (e) {
-        console.error('[upload] Cloudinary upload error:', e);
-        return res.status(500).json({ success: false, message: 'Failed to store image.' });
+        console.error('[upload] Cloudinary upload error:', {
+          message: e.message,
+          http_code: e.http_code,
+          name: e.name,
+          stack: e.stack
+        });
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to store image.',
+          reason: e.message || 'Cloudinary upload failed',
+          details: {
+            code: e.http_code,
+            type: e.name
+          }
+        });
       }
     });
   });

@@ -106,7 +106,11 @@ function adminServices(pool) {
         service: mapRow(result.rows[0]),
       });
     } catch (e) {
-      console.error('POST /admin/services', e);
+      console.error('POST /admin/services — Full Error:', {
+        message: e.message,
+        stack: e.stack,
+        body: req.body
+      });
       res.status(500).json({
         success: false,
         message: 'Failed to create service',
@@ -218,7 +222,12 @@ function adminServices(pool) {
         service: mapRow(result.rows[0]),
       });
     } catch (e) {
-      console.error('PATCH /admin/services/:id', e);
+      console.error('PATCH /admin/services/:id — Full Error:', {
+        id,
+        message: e.message,
+        stack: e.stack,
+        body: req.body
+      });
       res.status(500).json({
         success: false,
         message: 'Failed to update service',
